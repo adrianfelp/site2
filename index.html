@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Barbearia Nova Era — Agende seu corte</title>
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --accent:#eab308; --muted:#9aa3b2; --glass: rgba(255,255,255,0.04);
+      --radius:14px; --maxw:1100px; --gap:18px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg, #071023 0%, #081426 60%);color:#e6eef6}
+    a{color:inherit;text-decoration:none}
+
+    header{position:fixed;left:0;right:0;top:12px;margin:auto;max-width:var(--maxw);display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));backdrop-filter:blur(6px);border-radius:12px}
+    .logo{display:flex;gap:10px;align-items:center}
+    .logo svg{width:46px;height:46px}
+    nav{display:flex;gap:12px;align-items:center}
+    nav a{padding:8px 12px;border-radius:10px;color:var(--muted);font-weight:600}
+    nav a:hover{color:var(--accent);transform:translateY(-2px)}
+    .cta{background:linear-gradient(90deg,var(--accent),#ffda6b);padding:8px 14px;border-radius:10px;color:#0b0b0b;font-weight:700}
+
+    main{max-width:var(--maxw);margin:140px auto 60px;padding:24px}
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center}
+    .card{background:linear-gradient(180deg,var(--card), rgba(255,255,255,0.02));padding:22px;border-radius:var(--radius);box-shadow:0 6px 30px rgba(2,6,23,0.7)}
+
+    .eyebrow{color:var(--accent);font-weight:700;letter-spacing:0.08em;margin-bottom:8px}
+    h1{margin:0 0 12px;font-size:28px;line-height:1.05}
+    p.lead{color:var(--muted);margin-top:0}
+
+    .features{display:flex;gap:12px;margin-top:18px}
+    .feature{flex:1;padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.0));}
+
+    /* Booking panel */
+    .booking{position:relative}
+    .option{display:flex;gap:12px;align-items:center;padding:12px;border-radius:12px;background:var(--glass);margin-bottom:10px}
+    .option input{accent-color:var(--accent)}
+    .price{margin-left:auto;font-weight:700;color:var(--accent)}
+
+    /* Haircut grid */
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .cut{padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));cursor:pointer;transition:transform .25s ease, box-shadow .25s ease}
+    .cut:hover{transform:translateY(-6px);box-shadow:0 8px 30px rgba(0,0,0,0.5)}
+    .cut.selected{outline:3px solid rgba(234,179,8,0.16);}
+
+    /* Contact + Map */
+    .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}
+    .contact form{display:flex;flex-direction:column;gap:10px}
+    input,textarea,select{padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    button{padding:10px 14px;border-radius:10px;border:none;background:var(--accent);color:#06121a;font-weight:800;cursor:pointer}
+
+    footer{max-width:var(--maxw);margin:28px auto;color:var(--muted);display:flex;justify-content:space-between;align-items:center;padding:12px}
+
+    /* Mobile */
+    .burger{display:none}
+    @media(max-width:880px){
+      .hero{grid-template-columns:1fr;}
+      nav{display:none}
+      .burger{display:block}
+      header{padding:10px}
+    }
+
+    /* Animations */
+    .reveal{opacity:0;transform:translateY(12px);transition:all .7s cubic-bezier(.2,.95,.25,1)}
+    .reveal.show{opacity:1;transform:none}
+
+    /* Floating action */
+    .fab{position:fixed;right:20px;bottom:20px;background:linear-gradient(45deg,var(--accent),#ffb84a);color:#06121a;padding:12px;border-radius:50%;box-shadow:0 8px 30px rgba(234,179,8,0.15);cursor:pointer}
+
+    /* small helpers */
+    .muted{color:var(--muted)}
+    .small{font-size:13px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <!-- simple SVG logo animation -->
+      <svg viewBox="0 0 100 100" aria-hidden>
+        <defs>
+          <linearGradient id="g" x1="0" x2="1">
+            <stop offset="0" stop-color="#ffd86b" />
+            <stop offset="1" stop-color="#eab308" />
+          </linearGradient>
+        </defs>
+        <rect x="8" y="18" width="84" height="64" rx="12" fill="rgba(255,255,255,0.03)"/>
+        <path d="M28 40c8-12 24-12 36 0" stroke="url(#g)" stroke-width="6" fill="none" stroke-linecap="round">
+          <animate attributeName="stroke-dashoffset" dur="2s" from="60" to="0" fill="freeze" />
+        </path>
+      </svg>
+      <div>
+        <div style="font-weight:800">Barbearia Nova Era</div>
+        <div class="small muted">Cortes, Barba & Estilo</div>
+      </div>
+    </div>
+
+    <nav>
+      <a href="#servicos">Serviços</a>
+      <a href="#agendamento">Agendamento</a>
+      <a href="#contato">Contato</a>
+      <a href="#localizacao">Localização</a>
+      <a class="cta" href="#agendamento">Agende Agora</a>
+    </nav>
+
+    <button class="burger" aria-label="menu" onclick="toggleMobileMenu()">☰</button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="card reveal" id="intro">
+        <div class="eyebrow">Barbearia • Estilo & Tradição</div>
+        <h1>O corte certo, no horário certo — sinta-se confiante.</h1>
+        <p class="lead">Profissionais experientes em cortes modernos, clássicos e barba. Atendimento por hora marcado para evitar filas.</p>
+
+        <div class="features">
+          <div class="feature">
+            <strong>Equipe especializada</strong>
+            <div class="small muted">Barbeiros certificados, consultoria de estilo</div>
+          </div>
+          <div class="feature">
+            <strong>Ambiente premium</strong>
+            <div class="small muted">Música, bebidas e conforto</div>
+          </div>
+        </div>
+
+        <div style="margin-top:18px;display:flex;gap:12px">
+          <button onclick="document.getElementById('modal').classList.add('open')" class="cta">Agende seu horário</button>
+          <a href="#servicos" class="muted small" style="align-self:center">Ver serviços →</a>
+        </div>
+      </div>
+
+      <aside class="card booking reveal" id="bookPanel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div><strong>Agendamento rápido</strong><div class="small muted">Escolha o serviço e horário</div></div>
+          <div class="small muted">Duração média: 30–60 min</div>
+        </div>
+
+        <div class="grid">
+          <div class="cut" data-cut="Corte Clássico" onclick="selectCut(this)">
+            <strong>Corte Clássico</strong>
+            <div class="small muted">Rápido e elegante</div>
+            <div class="price">R$ 60</div>
+          </div>
+          <div class="cut" data-cut="Undercut Moderno" onclick="selectCut(this)">
+            <strong>Undercut Moderno</strong>
+            <div class="small muted">Cabelo estilizado</div>
+            <div class="price">R$ 85</div>
+          </div>
+          <div class="cut" data-cut="Fade" onclick="selectCut(this)">
+            <strong>Fade</strong>
+            <div class="small muted">Transição perfeita</div>
+            <div class="price">R$ 75</div>
+          </div>
+          <div class="cut" data-cut="Barba & Rosto" onclick="selectCut(this)">
+            <strong>Barba & Rosto</strong>
+            <div class="small muted">Aparar, modelar e hidratar</div>
+            <div class="price">R$ 50</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <label class="small muted">Escolha data</label>
+          <input type="date" id="date" />
+          <label class="small muted" style="margin-top:8px">Horário</label>
+          <select id="time">
+            <option>09:00</option>
+            <option>10:00</option>
+            <option>11:00</option>
+            <option>13:00</option>
+            <option>14:30</option>
+            <option>16:00</option>
+          </select>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button onclick="openBookingModal()">Continuar</button>
+            <button onclick="saveQuickBooking()" style="background:transparent;color:var(--accent);border:1px solid rgba(234,179,8,0.15)">Salvar rápido</button>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section id="servicos" class="card reveal" style="margin-top:22px">
+      <h2>Serviços populares</h2>
+      <p class="muted">Escolha entre cortes, barba, tratamentos e mais.</p>
+      <div class="cols" style="margin-top:12px">
+        <div>
+          <ul>
+            <li><strong>Corte Customizado</strong> — Consulta + corte (R$ 80)</li>
+            <li><strong>Barba completa</strong> — Design + hidratação (R$ 60)</li>
+            <li><strong>Tratamento capilar</strong> — Limpeza e reparação (R$ 120)</li>
+          </ul>
+        </div>
+        <div>
+          <ul>
+            <li><strong>Combo - Corte + Barba</strong> — Pacote (R$ 120)</li>
+            <li><strong>Kids</strong> — Corte infantil (R$ 45)</li>
+            <li><strong>Coloração</strong> — Mechas e tonalização (sob consulta)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="agendamento" class="card reveal" style="margin-top:22px">
+      <h2>Agende seu horário</h2>
+      <p class="muted">Preencha o formulário e receba confirmação por e-mail (simulado).</p>
+      <form id="bookingForm" onsubmit="submitBooking(event)" style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+        <input required id="name" placeholder="Seu nome" />
+        <input required id="phone" placeholder="Telefone (WhatsApp)" />
+        <input id="email" placeholder="Email (opcional)" />
+        <label class="small muted">Serviço</label>
+        <select id="service">
+          <option>Corte Clássico</option>
+          <option>Fade</option>
+          <option>Undercut Moderno</option>
+          <option>Barba & Rosto</option>
+        </select>
+        <div style="display:flex;gap:8px">
+          <input required type="date" id="bdate" />
+          <select id="btime">
+            <option>09:00</option>
+            <option>10:00</option>
+            <option>11:00</option>
+            <option>13:00</option>
+            <option>14:30</option>
+            <option>16:00</option>
+          </select>
+        </div>
+        <textarea id="note" rows="3" placeholder="Observações (ex: barbeiro preferido, alergias)"></textarea>
+        <button type="submit">Enviar agendamento</button>
+      </form>
+    </section>
+
+    <section id="contato" class="card reveal" style="margin-top:22px">
+      <h2>Contato</h2>
+      <div class="cols">
+        <div class="contact">
+          <p class="muted">Fale conosco via WhatsApp, e-mail ou visite a barbearia.</p>
+          <form onsubmit="contactSend(event)">
+            <input id="cname" placeholder="Seu nome" required />
+            <input id="cemail" placeholder="Seu email" />
+            <textarea id="cmessage" placeholder="Mensagem" rows="4"></textarea>
+            <div style="display:flex;gap:8px">
+              <button type="submit">Enviar mensagem</button>
+              <a href="https://wa.me/5511999999999" target="_blank" class="small muted" style="align-self:center">Abrir WhatsApp</a>
+            </div>
+          </form>
+        </div>
+        <div id="localizacao" style="border-radius:12px;overflow:hidden">
+          <!-- Placeholder map: substitute with your Google Maps embed key / iframe -->
+          <iframe title="mapa" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3656.0000000000005!2d-46.633309!3d-23.550520!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce59bb00000000%3A0x0!2sBarbearia%20Ficticia!5e0!3m2!1spt-BR!2sbr!4v0000000000000" width="100%" height="220" style="border:0;" allowfullscreen loading="lazy"></iframe>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div>© <span id="year"></span> Barbearia Nova Era — Todos os direitos</div>
+    <div class="small muted">Rua Exemplo, 123 — Centro · SP · (11) 99999-9999</div>
+  </footer>
+
+  <div class="fab" title="Agendar" onclick="document.getElementById('modal').classList.add('open')">✂️</div>
+
+  <!-- Modal (booking confirmation) -->
+  <div id="modal" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:24px;z-index:50">
+    <div style="width:100%;max-width:520px;background:linear-gradient(180deg,#061122,#071225);padding:18px;border-radius:16px;box-shadow:0 20px 60px rgba(2,6,23,0.8)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <strong>Confirmar agendamento</strong>
+        <button onclick="closeModal()" style="background:transparent;border:none;color:var(--muted);font-size:18px">✕</button>
+      </div>
+      <div id="modalBody">
+        <p class="muted">Escolha um serviço e preencha os dados no formulário de agendamento.</p>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+        <button onclick="confirmBooking()">Confirmar</button>
+        <button onclick="closeModal()" style="background:transparent;color:var(--accent)">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // small helpers
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Reveal on scroll
+    const reveals = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('show') });
+    },{threshold:0.12});
+    reveals.forEach(r=>io.observe(r));
+
+    // Mobile menu toggle (simple)
+    function toggleMobileMenu(){
+      const nav = document.querySelector('nav');
+      if(nav.style.display==='flex'){nav.style.display='none'}else{nav.style.display='flex';nav.style.flexDirection='column';nav.style.position='absolute';nav.style.right='12px';nav.style.top='64px';nav.style.background='linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))';nav.style.padding='12px';nav.style.borderRadius='12px'}
+    }
+
+    // Selection of haircut
+    let selectedCut = null;
+    function selectCut(el){
+      document.querySelectorAll('.cut').forEach(c=>c.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedCut = el.dataset.cut + ' — ' + (el.querySelector('.price')?.textContent || '—');
+    }
+
+    // Quick save booking to localStorage
+    function saveQuickBooking(){
+      const date = document.getElementById('date').value;
+      const time = document.getElementById('time').value;
+      if(!selectedCut){ alert('Escolha um serviço clicando em um dos itens'); return }
+      if(!date){ alert('Escolha uma data'); return }
+      const bookings = JSON.parse(localStorage.getItem('bookings')||'[]');
+      bookings.push({service:selectedCut,date,time,created:new Date().toISOString()});
+      localStorage.setItem('bookings', JSON.stringify(bookings));
+      alert('Agendamento salvo localmente — verifique o console para detalhes (simulação).');
+      console.log('bookings',bookings);
+    }
+
+    // Open modal with prefilled details
+    function openBookingModal(){
+      const mb = document.getElementById('modalBody');
+      mb.innerHTML = '';
+      const s = selectedCut || document.getElementById('service').value;
+      const d = document.getElementById('date').value || document.getElementById('bdate').value || '';
+      const t = document.getElementById('time').value || document.getElementById('btime').value || '';
+      mb.innerHTML = `<p><strong>Serviço:</strong> ${s}</p><p><strong>Data:</strong> ${d}</p><p><strong>Horário:</strong> ${t}</p><p class="muted">Preencha o formulário de agendamento para confirmar.</p>`;
+      document.getElementById('modal').style.display = 'flex';
+      document.getElementById('modal').classList.add('open');
+    }
+    function closeModal(){document.getElementById('modal').style.display='none';document.getElementById('modal').classList.remove('open')}
+
+    function confirmBooking(){
+      alert('Reservado! (simulação) — o agendamento foi gerado localmente.');
+      closeModal();
+    }
+
+    // Form submit handlers
+    function submitBooking(e){
+      e.preventDefault();
+      const data = {
+        name:document.getElementById('name').value,
+        phone:document.getElementById('phone').value,
+        email:document.getElementById('email').value,
+        service:document.getElementById('service').value,
+        date:document.getElementById('bdate').value,
+        time:document.getElementById('btime').value,
+        note:document.getElementById('note').value
+      };
+      const bookings = JSON.parse(localStorage.getItem('bookings')||'[]');
+      bookings.push({...data,created:new Date().toISOString()});
+      localStorage.setItem('bookings',JSON.stringify(bookings));
+      alert('Agendamento enviado (simulação). Confira o console/localStorage.');
+      console.log('Agendamento:',data);
+      e.target.reset();
+    }
+
+    function contactSend(e){
+      e.preventDefault();
+      alert('Mensagem enviada (simulação). Obrigado!');
+      document.getElementById('cname').value='';
+      document.getElementById('cemail').value='';
+      document.getElementById('cmessage').value='';
+    }
+
+    // simple animation for floating action button
+    (function pulseFAB(){
+      const f = document.querySelector('.fab');
+      setInterval(()=>{ f.animate([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:2000,iterations:1}) },3000);
+    })();
+
+    // small accessibility: close modal on Esc
+    window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal() });
+  </script>
+</body>
+</html>
